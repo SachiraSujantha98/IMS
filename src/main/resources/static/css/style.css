@@ -1,0 +1,49 @@
+/* Custom styles */
+.table img {
+    max-width: 100px;
+    height: auto;
+}
+
+.card {
+    margin-bottom: 1.5rem;
+}
+
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.75em;
+}
+
+/* Custom colors for status badges */
+.badge.bg-success {
+    background-color: #28a745;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d;
+}
+
+/* Navigation styles */
+.navbar {
+    margin-bottom: 2rem;
+}
+
+/* Form styles */
+.form-label {
+    font-weight: 500;
+}
+
+/* Modal styles */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}

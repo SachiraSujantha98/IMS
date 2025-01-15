@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Finance Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav th:replace="layout :: nav"></nav>
+
+<div class="container mt-4">
+    <h2>Finance Dashboard</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Completed Tests - Pending Cost Assignment</h3>
+        </div>
+        <div class="card-body">
+            <div th:if="${completedTests == null || completedTests.empty}" class="alert alert-info">
+                No tests pending cost assignment.
+            </div>
+            <table th:if="${completedTests != null && !completedTests.empty}" class="table">
+                <thead>
+                <tr>
+                    <th>Test ID</th>
+                    <th>Patient Name</th>
+                    <th>Test Type</th>
+                    <th>Completion Date</th>
+                    <th>Current Cost</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="test : ${completedTests}">
+                    <td th:text="${test.id}"></td>
+                    <td th:text="${test.patient.user.name}"></td>
+                    <td th:text="${test.testType}"></td>
+                    <td th:text="${#temporals.format(test.updatedAt, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="${test.cost != null ? '$' + test.cost : 'Not Set'}"></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm"
+                                data-bs-toggle="modal"
+                                th:data-bs-target="'#costModal-' + ${test.id}">
+                            Add Cost
+                        </button>
+
+                        <!-- Cost Modal -->
+                        <div class="modal fade" th:id="'costModal-' + ${test.id}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Add Test Cost</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form th:action="@{/finance/add-cost/{id}(id=${test.id})}" method="post">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="cost" class="form-label">Cost Amount ($)</label>
+                                                <input type="number"
+                                                       class="form-control"
+                                                       id="cost"
+                                                       name="cost"
+                                                       step="0.01"
+                                                       min="0"
+                                                       required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save Cost</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+<div th:if="${success}" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div class="toast show bg-success text-white">
+        <div class="toast-header">
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" th:text="${success}"></div>
+    </div>
+</div>
+
+<div th:if="${error}" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div class="toast show bg-danger text-white">
+        <div class="toast-header">
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" th:text="${error}"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Auto-hide toasts after 3 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        var toasts = document.querySelectorAll('.toast');
+        toasts.forEach(function(toast) {
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        });
+    });
+</script>
+</body>
+</html>

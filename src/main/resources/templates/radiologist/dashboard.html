@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Radiologist Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav th:replace="layout :: nav"></nav>
+
+<div class="container mt-4">
+    <h2>Radiologist Dashboard</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Pending Tests</h3>
+        </div>
+        <div class="card-body">
+            <div th:if="${pendingTests == null || pendingTests.empty}" class="alert alert-info">
+                No pending tests available.
+            </div>
+            <table th:if="${pendingTests != null && !pendingTests.empty}" class="table">
+                <thead>
+                <tr>
+                    <th>Test ID</th>
+                    <th>Patient Name</th>
+                    <th>Test Type</th>
+                    <th>Date Requested</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="test : ${pendingTests}">
+                    <td th:text="${test.id}"></td>
+                    <td th:text="${test.patient.user.name}"></td>
+                    <td th:text="${test.testType}"></td>
+                    <td th:text="${#temporals.format(test.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm"
+                                data-bs-toggle="modal"
+                                th:data-bs-target="'#uploadModal-' + ${test.id}">
+                            Upload Image
+                        </button>
+
+                        <!-- Upload Modal for each test -->
+                        <div class="modal fade" th:id="'uploadModal-' + ${test.id}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Upload Test Image</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form th:action="@{/radiologist/upload-image/{id}(id=${test.id})}"
+                                          method="post"
+                                          enctype="multipart/form-data">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="image" class="form-label">Select Image</label>
+                                                <input type="file"
+                                                       class="form-control"
+                                                       id="image"
+                                                       name="image"
+                                                       accept="image/*"
+                                                       required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Upload</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Success message toast -->
+<div th:if="${success}" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div class="toast show bg-success text-white" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" th:text="${success}"></div>
+    </div>
+</div>
+
+<!-- Error message toast -->
+<div th:if="${error}" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div class="toast show bg-danger text-white" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" th:text="${error}"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Initialize tooltips and toasts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide toasts after 3 seconds
+        var toasts = document.querySelectorAll('.toast');
+        toasts.forEach(function(toast) {
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        });
+    });
+</script>
+</body>
+</html>

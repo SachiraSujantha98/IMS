@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head">
+    <title>Register New User</title>
+</head>
+<body>
+<div th:replace="layout :: nav"></div>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Register New User</h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/admin/register}" method="post" th:object="${user}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" th:field="*{username}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" th:field="*{address}" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-control" id="role" th:field="*{role}" required onchange="toggleDoctorSelect()">
+                                <option value="DOCTOR">Doctor</option>
+                                <option value="PATIENT">Patient</option>
+                                <option value="RADIOLOGIST">Radiologist</option>
+                                <option value="FINANCE">Finance</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="doctorSelectDiv" style="display: none;">
+                            <label for="doctorId" class="form-label">Assign Doctor</label>
+                            <select class="form-control" id="doctorId" name="doctorId">
+                                <option value="">Select a Doctor</option>
+                                <option th:each="doctor : ${doctors}"
+                                        th:value="${doctor.id}"
+                                        th:text="${doctor.name}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Register User</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleDoctorSelect() {
+        var roleSelect = document.getElementById('role');
+        var doctorDiv = document.getElementById('doctorSelectDiv');
+        var doctorSelect = document.getElementById('doctorId');
+
+        if (roleSelect.value === 'PATIENT') {
+            doctorDiv.style.display = 'block';
+            doctorSelect.required = true;
+        } else {
+            doctorDiv.style.display = 'none';
+            doctorSelect.required = false;
+        }
+    }
+
+    // Call on page load to set initial state
+    toggleDoctorSelect();
+</script>
+</body>
+</html>

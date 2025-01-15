@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head">
+    <title>Patient Dashboard</title>
+</head>
+<body>
+<div th:replace="layout :: nav"></div>
+
+<div class="container mt-4">
+    <h2>Patient Dashboard</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>My Information</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> <span th:text="${patient.user.name}"></span></p>
+                    <p><strong>Address:</strong> <span th:text="${patient.user.address}"></span></p>
+                    <p><strong>Doctor:</strong> <span th:text="${patient.doctor.name}"></span></p>
+                    <p><strong>Total Cost:</strong> $<span th:text="${patient.totalCost}"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>My Tests</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Test Type</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Cost</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="test : ${tests}">
+                            <td th:text="${test.testType}"></td>
+                            <td>
+                                        <span th:if="${test.completed && test.prescription != null}"
+                                              class="badge bg-success">Completed</span>
+                                <span th:if="${test.completed && test.prescription == null}"
+                                      class="badge bg-warning">Awaiting Prescription</span>
+                                <span th:if="${!test.completed}"
+                                      class="badge bg-secondary">Pending</span>
+                            </td>
+                            <td th:text="${#temporals.format(test.createdAt, 'dd-MM-yyyy')}"></td>
+                            <td th:text="${test.cost != null ? '$' + test.cost : 'Pending'}"></td>
+                            <td>
+                                <a th:href="@{/patient/test/{id}(id=${test.id})}"
+                                   class="btn btn-primary btn-sm">View Details</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
